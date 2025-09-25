@@ -10,7 +10,7 @@
 ### Installation
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/aptosphere.git
+git clone https://github.com/kartikeyp011/aptosphere.git
 
 # Install dependencies
 npm install
@@ -22,7 +22,7 @@ npm run dev
 ### Environment Setup
 Create `.env.local` file:
 ```env
-NEXT_PUBLIC_APTOS_NETWORK=mainnet
+NEXT_PUBLIC_APTOS_NETWORK=testnet
 NEXT_PUBLIC_APP_VERSION=1.0.0
 ```
 
@@ -76,7 +76,7 @@ src/
 ```typescript
 // Aptos client configuration
 const aptosConfig = new AptosConfig({ 
-  network: Network.MAINNET 
+  network: Network.TESTNET 
 });
 const aptos = new Aptos(aptosConfig);
 
@@ -137,24 +137,10 @@ interface TransactionState {
 - **No private key storage**: Wallet-based signing only
 
 ### Blockchain Security
-- **Mainnet validation**: Production-ready transaction checks
+- **TESTNET validation**: Production-ready transaction checks
 - **Gas optimization**: Automatic gas calculation
 - **Transaction status**: Success/failure state tracking
-- **Network compatibility**: Aptos mainnet and testnet support
-
-## 📊 Performance Optimizations
-
-### Data Fetching
-- **Polling intervals**: Balanced update frequency (10-30s)
-- **Request batching**: Combined balance and transaction calls
-- **Caching strategy**: Local state management with invalidation
-- **Lazy loading**: Component and data lazy initialization
-
-### Rendering Optimizations
-- **Memoization**: React.memo and useMemo implementations
-- **Code splitting**: Dynamic imports for heavy components
-- **Image optimization**: Next.js optimized images
-- **Bundle analysis**: Regular bundle size monitoring
+- **Network compatibility**: Aptos testnet and testnet support
 
 ## 🧪 Testing Strategy
 
@@ -197,7 +183,7 @@ npm run export
 ### Environment Variables
 ```env
 # Production environment
-NEXT_PUBLIC_APTOS_NETWORK=mainnet
+NEXT_PUBLIC_APTOS_NETWORK=testnet
 NEXT_PUBLIC_APP_URL=https://aptosphere.vercel.app
 NEXT_PUBLIC_VERSION=1.0.0
 ```
@@ -226,20 +212,6 @@ docs: Update transaction flow documentation
 style: Improve button hover states
 refactor: Optimize wallet connection logic
 ```
-
-## 📈 Monitoring & Analytics
-
-### Performance Metrics
-- **Transaction success rates**
-- **Wallet connection statistics**
-- **User interaction patterns**
-- **Error rate monitoring**
-
-### Analytics Integration
-- **Custom event tracking**: User flow analysis
-- **Performance monitoring**: Core Web Vitals
-- **Error tracking**: Sentry integration ready
-- **User feedback**: In-app feedback system
 
 ## 🤝 Contributing
 
