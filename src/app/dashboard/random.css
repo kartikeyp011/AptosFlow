@@ -1,0 +1,791 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Bell, 
+  CreditCard, 
+  Calendar, 
+  Users, 
+  Send, 
+  ArrowUpRight, 
+  ArrowDownLeft, 
+  Settings, 
+  LogOut,
+  HelpCircle,
+  TrendingUp,
+  Wallet,
+  PieChart,
+  Shield,
+  Zap,
+  MoreVertical,
+  Search,
+  Filter,
+  Download,
+  Eye,
+  ChevronDown,
+  Mail,
+  Github,
+  Twitter,
+  Linkedin
+} from 'lucide-react';
+import { useWallet } from '@/context/WalletContext'; // Wallet context
+
+// Mock data for other UI elements
+const mockData = {
+  weeklyChange: 2.5,
+  transactions: [
+    { id: 1, type: 'incoming', amount: 500, description: 'Payment from Alex Chen', timestamp: '2024-01-15T10:30:00', icon: ArrowDownLeft, status: 'completed' },
+    { id: 2, type: 'outgoing', amount: 120, description: 'Netflix subscription', timestamp: '2024-01-14T16:45:00', icon: ArrowUpRight, status: 'recurring' },
+    { id: 3, type: 'outgoing', amount: 45.50, description: 'Starbucks Coffee', timestamp: '2024-01-14T09:15:00', icon: ArrowUpRight, status: 'completed' },
+    { id: 4, type: 'incoming', amount: 1000, description: 'Salary deposit - Company Inc', timestamp: '2024-01-12T08:00:00', icon: ArrowDownLeft, status: 'completed' },
+    { id: 5, type: 'outgoing', amount: 250, description: 'Electricity bill', timestamp: '2024-01-10T14:20:00', icon: ArrowUpRight, status: 'scheduled' },
+  ],
+  quickStats: [
+    { label: 'Total Transactions', value: '128', change: '+12%', icon: CreditCard },
+    { label: 'Active Subscriptions', value: '7', change: '+2', icon: Calendar },
+    { label: 'Split Payments', value: '23', change: '+5%', icon: Users },
+  ]
+};
+
+// // Enhanced Navbar with dark theme
+// const Navbar = () => {
+//   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+//   const [scrolled, setScrolled] = useState(false);
+
+//   useEffect(() => {
+//     const handleScroll = () => {
+//       setScrolled(window.scrollY > 10);
+//     };
+//     window.addEventListener('scroll', handleScroll);
+//     return () => window.removeEventListener('scroll', handleScroll);
+//   }, []);
+
+//   return (
+//     <motion.nav 
+//       initial={{ y: -100 }}
+//       animate={{ y: 0 }}
+//       className={`sticky top-0 z-50 transition-all duration-300 ${
+//         scrolled 
+//           ? 'bg-gray-900/95 backdrop-blur-xl border-b border-gray-800/50 shadow-2xl' 
+//           : 'bg-gray-900/80 backdrop-blur-md border-b border-gray-800/30'
+//       }`}
+//     >
+//       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+//         <div className="flex justify-between items-center h-16">
+//           {/* Logo */}
+//           <motion.div
+//             whileHover={{ scale: 1.02 }}
+//             className="flex items-center space-x-3"
+//           >
+//             <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-xl flex items-center justify-center shadow-lg">
+//               <Zap className="w-6 h-6 text-white" />
+//             </div>
+//             <div>
+//               <span className="text-xl font-bold text-white">SmartPay</span>
+//               <div className="h-1 w-12 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full mt-1"></div>
+//             </div>
+//           </motion.div>
+
+//           {/* Search and User Area */}
+//           <div className="flex items-center space-x-4">
+//             <motion.div whileHover={{ scale: 1.02 }} className="relative">
+//               <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+//               <input 
+//                 type="text" 
+//                 placeholder="Search transactions..." 
+//                 className="pl-10 pr-4 py-2 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all w-64"
+//               />
+//             </motion.div>
+
+//             {/* Notifications */}
+//             <motion.button
+//               whileHover={{ scale: 1.05 }}
+//               whileTap={{ scale: 0.95 }}
+//               className="relative p-2 text-gray-400 hover:text-white transition-colors"
+//             >
+//               <Bell className="w-6 h-6" />
+//               <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-gray-900"></span>
+//             </motion.button>
+
+//             {/* User Avatar */}
+//             <div className="relative">
+//               <motion.button
+//                 whileHover={{ scale: 1.02 }}
+//                 whileTap={{ scale: 0.98 }}
+//                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+//                 className="flex items-center space-x-3 bg-gray-800/50 rounded-xl p-2 border border-gray-700 hover:border-gray-600 transition-all"
+//               >
+//                 <div className="w-8 h-8 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center shadow-lg">
+//                   <span className="text-white font-semibold text-sm">JD</span>
+//                 </div>
+//                 <div className="hidden md:block text-left">
+//                   <div className="text-sm font-medium text-white">John Doe</div>
+//                   <div className="text-xs text-gray-400">Premium</div>
+//                 </div>
+//                 <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+//               </motion.button>
+
+//               <AnimatePresence>
+//                 {isDropdownOpen && (
+//                   <motion.div
+//                     initial={{ opacity: 0, y: -10, scale: 0.95 }}
+//                     animate={{ opacity: 1, y: 0, scale: 1 }}
+//                     exit={{ opacity: 0, y: -10, scale: 0.95 }}
+//                     className="absolute right-0 mt-2 w-64 bg-gray-800 rounded-xl shadow-2xl border border-gray-700/50 overflow-hidden z-50"
+//                   >
+//                     <div className="p-4 border-b border-gray-700/50">
+//                       <div className="text-sm font-medium text-white">John Doe</div>
+//                       <div className="text-xs text-gray-400">john.doe@smartpay.com</div>
+//                     </div>
+                    
+//                     <div className="p-2">
+//                       {[
+//                         { icon: Settings, label: 'Account Settings' },
+//                         { icon: Shield, label: 'Security' },
+//                         { icon: HelpCircle, label: 'Help Center' },
+//                       ].map((item) => (
+//                         <motion.button
+//                           key={item.label}
+//                           whileHover={{ x: 5 }}
+//                           className="flex items-center w-full px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700/50 rounded-lg transition-all"
+//                         >
+//                           <item.icon className="w-4 h-4 mr-3" />
+//                           {item.label}
+//                         </motion.button>
+//                       ))}
+//                     </div>
+                    
+//                     <div className="p-2 border-t border-gray-700/50">
+//                       <motion.button
+//                         whileHover={{ x: 5 }}
+//                         className="flex items-center w-full px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all"
+//                       >
+//                         <LogOut className="w-4 h-4 mr-3" />
+//                         Sign Out
+//                       </motion.button>
+//                     </div>
+//                   </motion.div>
+//                 )}
+//               </AnimatePresence>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </motion.nav>
+//   );
+// };
+
+// Wallet Balance Component (Real-time APT from Petra Wallet)
+const WalletBalance = () => {
+  const { account, aptBalance } = useWallet(); // Fetch live wallet info
+  const [displayBalance, setDisplayBalance] = useState(0);
+
+  useEffect(() => {
+    if (aptBalance != null) {
+      const increment = aptBalance / 30;
+      let current = 0;
+      const counter = setInterval(() => {
+        current += increment;
+        if (current >= aptBalance) {
+          current = aptBalance;
+          clearInterval(counter);
+        }
+        setDisplayBalance(current);
+      }, 30);
+      return () => clearInterval(counter);
+    }
+  }, [aptBalance]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.2, duration: 0.8 }}
+      whileHover={{ scale: 1.01 }}
+      className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-gray-800 p-8 shadow-2xl border border-gray-700/50"
+    >
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute -top-20 -right-20 w-40 h-40 bg-blue-500 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-cyan-500 rounded-full blur-3xl"></div>
+      </div>
+      
+      <div className="relative z-10">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-300 mb-1">Wallet Balance</h2>
+            {account ? (
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-sm text-gray-400">Connected: {account}</span>
+              </div>
+            ) : (
+              <span className="text-sm text-red-400">Wallet disconnected</span>
+            )}
+          </div>
+          <motion.div whileHover={{ rotate: 15, scale: 1.1 }} className="p-3 bg-gray-800/50 rounded-xl border border-gray-700/50">
+            <Wallet className="w-6 h-6 text-cyan-400" />
+          </motion.div>
+        </div>
+        
+        <motion.div
+          key={displayBalance}
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="text-5xl font-bold text-white mb-2 tracking-tight"
+        >
+          {displayBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} APT
+        </motion.div>
+        
+        <div className="flex items-center space-x-4">
+          <div className={`flex items-center space-x-1 text-sm font-medium ${
+            mockData.weeklyChange >= 0 ? 'text-green-400' : 'text-red-400'
+          }`}>
+            <TrendingUp className="w-4 h-4" />
+            <span>{mockData.weeklyChange >= 0 ? '+' : ''}{mockData.weeklyChange}%</span>
+          </div>
+          <span className="text-gray-400 text-sm">from last week</span>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+// Quick Stats Cards
+const QuickStats = () => {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {mockData.quickStats.map((stat, index) => {
+        const Icon = stat.icon;
+        return (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 + index * 0.1 }}
+            whileHover={{ y: -5, scale: 1.02 }}
+            className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/30 hover:border-gray-600/50 transition-all group"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                <Icon className="w-6 h-6 text-blue-400" />
+              </div>
+              <MoreVertical className="w-5 h-5 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </div>
+            
+            <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
+            <div className="text-sm text-gray-400 mb-2">{stat.label}</div>
+            <div className="text-xs text-green-400 font-medium">{stat.change}</div>
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+};
+
+// Enhanced Action Button with Glassmorphism
+const ActionButton = ({ 
+  icon: Icon, 
+  label, 
+  description,
+  delay,
+  gradient
+}: { 
+  icon: React.ElementType; 
+  label: string;
+  description: string;
+  delay: number;
+  gradient: string;
+}) => {
+  return (
+    <motion.button
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.6 }}
+      whileHover={{ 
+        scale: 1.05,
+        y: -5
+      }}
+      whileTap={{ scale: 0.95 }}
+      className={`relative group p-6 rounded-xl ${gradient} shadow-2xl overflow-hidden`}
+    >
+      {/* Animated background */}
+      <div className="absolute inset-0 bg-white/5 group-hover:bg-white/10 transition-all duration-300"></div>
+      
+      {/* Ripple effect container */}
+      <div className="absolute inset-0 overflow-hidden rounded-xl">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+      </div>
+      
+      <div className="relative z-10 flex items-center space-x-4">
+        <div className="p-3 bg-white/10 rounded-lg backdrop-blur-sm border border-white/20">
+          <Icon className="w-6 h-6 text-white" />
+        </div>
+        <div className="text-left">
+          <div className="font-semibold text-white text-lg mb-1">{label}</div>
+          <div className="text-white/80 text-sm">{description}</div>
+        </div>
+      </div>
+    </motion.button>
+  );
+};
+
+// Actions Section
+const ActionsSection = () => {
+  const actions = [
+    { 
+      icon: Send, 
+      label: 'Send Payment', 
+      description: 'Instant transfer to anyone',
+      gradient: 'bg-gradient-to-br from-blue-600 to-blue-700'
+    },
+    { 
+      icon: Calendar, 
+      label: 'Schedule', 
+      description: 'Set up recurring payments',
+      gradient: 'bg-gradient-to-br from-purple-600 to-purple-700'
+    },
+    { 
+      icon: Users, 
+      label: 'Split Payment', 
+      description: 'Share expenses with friends',
+      gradient: 'bg-gradient-to-br from-cyan-600 to-cyan-700'
+    },
+  ];
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {actions.map((action, index) => (
+        <ActionButton
+          key={action.label}
+          {...action}
+          delay={0.4 + index * 0.1}
+        />
+      ))}
+    </div>
+  );
+};
+
+// Enhanced Transaction Item
+const TransactionItem = ({ 
+  transaction,
+  index 
+}: { 
+  transaction: typeof mockData.transactions[0];
+  index: number;
+}) => {
+  const Icon = transaction.icon;
+  const isIncoming = transaction.type === 'incoming';
+  
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed': return 'text-green-400 bg-green-400/10 border-green-400/20';
+      case 'recurring': return 'text-blue-400 bg-blue-400/10 border-blue-400/20';
+      case 'scheduled': return 'text-yellow-400 bg-yellow-400/10 border-yellow-400/20';
+      default: return 'text-gray-400 bg-gray-400/10 border-gray-400/20';
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.1, duration: 0.5 }}
+      whileHover={{ x: 5, backgroundColor: 'rgba(255, 255, 255, 0.02)' }}
+      className="flex items-center justify-between p-4 bg-gray-800/30 rounded-xl border border-gray-700/30 hover:border-gray-600/50 transition-all group"
+    >
+      <div className="flex items-center space-x-4">
+        <div className={`p-3 rounded-lg border ${
+          isIncoming 
+            ? 'bg-green-400/10 border-green-400/20 text-green-400' 
+            : 'bg-red-400/10 border-red-400/20 text-red-400'
+        }`}>
+          <Icon className="w-5 h-5" />
+        </div>
+        
+        <div>
+          <div className="font-medium text-white group-hover:text-cyan-400 transition-colors">
+            {transaction.description}
+          </div>
+          <div className="text-sm text-gray-400">
+            {new Date(transaction.timestamp).toLocaleDateString('en-US', { 
+              month: 'short', 
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            })}
+          </div>
+        </div>
+      </div>
+      
+      <div className="flex items-center space-x-4">
+        <span className={`text-lg font-semibold ${
+          isIncoming ? 'text-green-400' : 'text-red-400'
+        }`}>
+          {isIncoming ? '+' : '-'}${transaction.amount}
+        </span>
+        
+        <span className={`px-2 py-1 rounded-full text-xs border ${getStatusColor(transaction.status)}`}>
+          {transaction.status}
+        </span>
+        
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          className="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-gray-700/50 rounded-lg"
+        >
+          <Eye className="w-4 h-4 text-gray-400" />
+        </motion.button>
+      </div>
+    </motion.div>
+  );
+};
+
+// Enhanced Transactions Section
+const TransactionsSection = () => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: 0.5 }}
+      className="bg-gray-800/30 rounded-2xl border border-gray-700/30 p-6 backdrop-blur-sm"
+    >
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h3 className="text-xl font-semibold text-white mb-1">Recent Transactions</h3>
+          <p className="text-gray-400 text-sm">Your latest financial activities</p>
+        </div>
+        
+        <div className="flex items-center space-x-3">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="flex items-center space-x-2 px-4 py-2 bg-gray-700/50 hover:bg-gray-700 rounded-lg border border-gray-600/50 transition-all"
+          >
+            <Filter className="w-4 h-4" />
+            <span className="text-sm text-gray-300">Filter</span>
+          </motion.button>
+          
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-500/10 hover:bg-blue-500/20 rounded-lg border border-blue-500/20 text-blue-400 transition-all"
+          >
+            <Download className="w-4 h-4" />
+            <span className="text-sm">Export</span>
+          </motion.button>
+        </div>
+      </div>
+      
+      <div className="space-y-3">
+        {mockData.transactions.map((transaction, index) => (
+          <TransactionItem key={transaction.id} transaction={transaction} index={index} />
+        ))}
+      </div>
+      
+      <motion.button
+        whileHover={{ scale: 1.02 }}
+        className="w-full mt-6 py-3 text-center text-gray-400 hover:text-white border border-dashed border-gray-600/50 hover:border-gray-500 rounded-xl transition-all"
+      >
+        View All Transactions
+      </motion.button>
+    </motion.div>
+  );
+};
+
+// Enhanced Analytics Chart Component
+const AnalyticsChart = () => {
+  const maxValue = Math.max(...mockData.chartData.map(d => Math.max(d.income, d.expenses)));
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: 0.6 }}
+      className="bg-gray-800/30 rounded-2xl border border-gray-700/30 p-6 backdrop-blur-sm"
+    >
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h3 className="text-xl font-semibold text-white mb-1">Financial Analytics</h3>
+          <p className="text-gray-400 text-sm">Income vs Expenses overview</p>
+        </div>
+        <TrendingUp className="w-6 h-6 text-cyan-400" />
+      </div>
+      
+      <div className="h-64 flex items-end justify-between space-x-2 mb-6">
+        {mockData.chartData.map((item, index) => (
+          <motion.div
+            key={item.date}
+            initial={{ scaleY: 0 }}
+            whileInView={{ scaleY: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.7 + index * 0.1, duration: 0.8, ease: "easeOut" }}
+            className="flex flex-col items-center space-y-2 flex-1 group"
+          >
+            <div className="flex space-x-1 w-full h-40 items-end">
+              {/* Income Bar */}
+              <motion.div
+                initial={{ scaleY: 0 }}
+                whileInView={{ scaleY: 1 }}
+                transition={{ delay: 0.8 + index * 0.1, duration: 0.8, ease: "easeOut" }}
+                className="relative w-full bg-gradient-to-t from-green-500 to-green-400 rounded-t transition-all duration-300 group-hover:from-green-400 group-hover:to-green-300"
+                style={{ height: `${(item.income / maxValue) * 100}%` }}
+              >
+                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  Income: ${item.income}
+                </div>
+              </motion.div>
+              
+              {/* Expenses Bar */}
+              <motion.div
+                initial={{ scaleY: 0 }}
+                whileInView={{ scaleY: 1 }}
+                transition={{ delay: 0.9 + index * 0.1, duration: 0.8, ease: "easeOut" }}
+                className="relative w-full bg-gradient-to-t from-red-500 to-red-400 rounded-t transition-all duration-300 group-hover:from-red-400 group-hover:to-red-300"
+                style={{ height: `${(item.expenses / maxValue) * 100}%` }}
+              >
+                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  Expenses: ${item.expenses}
+                </div>
+              </motion.div>
+            </div>
+            <span className="text-xs text-gray-400 font-medium">{item.date}</span>
+          </motion.div>
+        ))}
+      </div>
+      
+      <div className="flex justify-center space-x-6">
+        <div className="flex items-center space-x-2">
+          <div className="w-3 h-3 bg-gradient-to-r from-green-500 to-green-400 rounded"></div>
+          <span className="text-sm text-gray-300">Income</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <div className="w-3 h-3 bg-gradient-to-r from-red-500 to-red-400 rounded"></div>
+          <span className="text-sm text-gray-300">Expenses</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-blue-400 rounded"></div>
+          <span className="text-sm text-gray-300">Net</span>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+// Enhanced Notification Item
+const NotificationItem = ({ 
+  notification,
+  index 
+}: { 
+  notification: typeof mockData.notifications[0];
+  index: number;
+}) => {
+  const getIcon = () => {
+    switch (notification.type) {
+      case 'warning': return Bell;
+      case 'error': return Shield;
+      case 'success': return CheckCircle;
+      default: return Bell;
+    }
+  };
+
+  const getColor = () => {
+    switch (notification.type) {
+      case 'warning': return 'text-yellow-400 bg-yellow-400/10 border-yellow-400/20';
+      case 'error': return 'text-red-400 bg-red-400/10 border-red-400/20';
+      case 'success': return 'text-green-400 bg-green-400/10 border-green-400/20';
+      default: return 'text-gray-400 bg-gray-400/10 border-gray-400/20';
+    }
+  };
+
+  const Icon = getIcon();
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      transition={{ delay: index * 0.1 }}
+      className={`flex items-center space-x-4 p-4 bg-gray-800/30 rounded-xl border border-gray-700/30 hover:border-gray-600/50 transition-all group ${
+        notification.unread ? 'border-l-4 border-l-cyan-400' : ''
+      }`}
+    >
+      <div className={`p-2 rounded-lg border ${getColor()}`}>
+        <Icon className="w-4 h-4" />
+      </div>
+      
+      <div className="flex-1">
+        <div className="text-sm font-medium text-white">{notification.message}</div>
+        <div className="text-xs text-gray-400">{notification.timestamp}</div>
+      </div>
+      
+      {notification.unread && (
+        <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+      )}
+    </motion.div>
+  );
+};
+
+// Enhanced Notifications Section
+const NotificationsSection = () => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: 0.7 }}
+      className="bg-gray-800/30 rounded-2xl border border-gray-700/30 p-6 backdrop-blur-sm"
+    >
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h3 className="text-xl font-semibold text-white mb-1">Notifications</h3>
+          <p className="text-gray-400 text-sm">Latest updates and alerts</p>
+        </div>
+        
+        <div className="flex items-center space-x-2">
+          <Bell className="w-5 h-5 text-cyan-400" />
+          <span className="text-sm text-gray-400">
+            {mockData.notifications.filter(n => n.unread).length} unread
+          </span>
+        </div>
+      </div>
+      
+      <div className="space-y-3">
+        <AnimatePresence>
+          {mockData.notifications.map((notification, index) => (
+            <NotificationItem key={notification.id} notification={notification} index={index} />
+          ))}
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+};
+
+// Enhanced Footer
+const Footer = () => {
+  const socialIcons = [
+    { icon: Twitter, label: 'Twitter' },
+    { icon: Github, label: 'GitHub' },
+    { icon: Linkedin, label: 'LinkedIn' },
+    { icon: Mail, label: 'Email' },
+  ];
+
+  return (
+    <motion.footer
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="border-t border-gray-800/50 mt-12 py-12 bg-gray-900/50"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          <div>
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-lg flex items-center justify-center">
+                <Zap className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-xl font-bold text-white">SmartPay</span>
+            </div>
+            <p className="text-gray-400 text-sm leading-relaxed">
+              Advanced payment platform with smart features for modern finance management and seamless transactions.
+            </p>
+          </div>
+          
+          {['Product', 'Company', 'Resources', 'Legal'].map((section) => (
+            <div key={section}>
+              <h4 className="font-semibold text-white mb-4 text-lg">{section}</h4>
+              <ul className="space-y-3">
+                {['Features', 'Solutions', 'Pricing', 'Releases'].map((link) => (
+                  <li key={link}>
+                    <motion.a
+                      whileHover={{ x: 5, color: '#22d3ee' }}
+                      href="#"
+                      className="text-gray-400 hover:text-cyan-400 transition-colors text-sm"
+                    >
+                      {link}
+                    </motion.a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+        
+        <div className="border-t border-gray-800/50 pt-8 flex flex-col md:flex-row justify-between items-center">
+          <p className="text-gray-400 text-sm mb-4 md:mb-0">
+            © 2024 SmartPay. All rights reserved. Built with ❤️ for the future of finance.
+          </p>
+          
+          <div className="flex space-x-4">
+            {socialIcons.map((social) => {
+              const Icon = social.icon;
+              return (
+                <motion.a
+                  key={social.label}
+                  whileHover={{ scale: 1.2, color: '#22d3ee' }}
+                  href="#"
+                  className="text-gray-400 hover:text-cyan-400 transition-all p-2 hover:bg-gray-800/50 rounded-lg"
+                >
+                  <Icon className="w-5 h-5" />
+                </motion.a>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </motion.footer>
+  );
+};
+
+// Main Dashboard Page
+export default function DashboardPage() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Wallet Balance */}
+        <section className="mb-8">
+          <WalletBalance />
+        </section>
+
+        {/* Quick Stats */}
+        <section className="mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {mockData.quickStats.map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 + index * 0.1 }}
+                  whileHover={{ y: -5, scale: 1.02 }}
+                  className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/30 hover:border-gray-600/50 transition-all group"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                      <Icon className="w-6 h-6 text-blue-400" />
+                    </div>
+                    <MoreVertical className="w-5 h-5 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
+                  <div className="text-sm text-gray-400 mb-2">{stat.label}</div>
+                  <div className="text-xs text-green-400 font-medium">{stat.change}</div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+}
+
+// Missing icon component
+const CheckCircle = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);

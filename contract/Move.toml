@@ -1,0 +1,18 @@
+[package]
+name = "SmartPay"
+version = "0.1.0"
+authors = ["Your Name"]
+
+[addresses]
+# Standard library address
+std = "0x1"
+smart_pay = "0xaa5edfbad7cfd7ae37d35bd890f2981d674c3af50b11e533bc4218136a1de743"
+
+# Optional: you can assign your module's dev address here for testing
+[dev-addresses]
+SmartPay = "0xa7f22aeeaa9262e67f55fbdeea4882207739c86bf043adec8e794e453de23347"
+
+[dependencies]
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-framework.git", rev = "mainnet", subdir = "aptos-framework" }
+
+[dev-dependencies]
