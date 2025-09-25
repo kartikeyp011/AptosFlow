@@ -1,4 +1,4 @@
-# Aptosphere - Aptos Blockchain Payment Platform
+# AptosFlow - Aptos Blockchain Payment Platform
 
 ## 🚀 Quick Start
 
